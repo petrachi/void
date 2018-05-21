@@ -55,7 +55,9 @@ module Polyhedron::NoisyShape
 
   def perlin_noise polyhedron, octaves, divisions
     smooth_noises = []
-    persistance = 0.5
+    persistance = 0.35
+    # plus petit == plus escarpé
+    # plus grand == plus smooth
 
     divisions.times do |i|
       smooth_noise(polyhedron, octaves, i)
@@ -75,8 +77,40 @@ module Polyhedron::NoisyShape
       point.options[:noise] /= total_amplitude
     end
 
-    polyhedron.polygons.each_with_index do |polygon, i|
-      polygon.options[:noise] = polygon.points.reduce(0){ |sum, point| sum += point.options[:noise] } / polygon.points.size.to_f
+    polyhedron.polygons.each do |polygon|
+      # polygon.options[:noise] = polygon.points.reduce(0){ |sum, point| sum += point.options[:noise] } / polygon.points.size.to_f
+
+      polygon.options[:noise] = polygon.points.map{|point| point.options[:noise]}.max
+
+      if polygon.options[:noise] >= 0.8
+        polygon.options[:fill] = fill(0.9)
+      elsif polygon.options[:noise] >= 0.75
+        polygon.options[:fill] = fill(0.75)
+      elsif polygon.options[:noise] >= 0.7
+        polygon.options[:fill] = fill(0.7)
+      elsif polygon.options[:noise] >= 0.5
+        polygon.options[:fill] = fill(0.5)
+      else
+        polygon.options[:fill] = fill(0.3)
+      end
     end
+
+    polyhedron.points.each do |point|
+      # point.options[:noise] **= 2
+      # point.scale! (1 + point.options[:noise]*0.3), Quaternion(0,0,0,0)
+      if point.options[:noise] >= 0.8
+        point.scale! 1.2, Quaternion(0,0,0,0)
+      elsif point.options[:noise] >= 0.75
+        point.scale! 1.15, Quaternion(0,0,0,0)
+      elsif point.options[:noise] >= 0.7
+        point.scale! 1.1, Quaternion(0,0,0,0)
+      elsif point.options[:noise] >= 0.5
+        point.scale! 1.05, Quaternion(0,0,0,0)
+      end
+    end
+  end
+
+  def fill value
+    "rgb(#{ (value * 255).to_i }, #{ (value * 127).to_i }, #{ 255 - (value * 255).to_i })"
   end
 end

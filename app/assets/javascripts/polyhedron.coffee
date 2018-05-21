@@ -23,9 +23,14 @@ class window.Polyhedron
     this
 
   toSvg: (svg_elt, perspective = new Quaternion(0, 0, 0, -Infinity)) ->
+
+    t = + new Date()
     polygons = @polygons.sort (a,b) ->
       b.sumZ() - a.sumZ()
+    console.log("sort " + (+ new Date() - t))
 
+    t = + new Date()
     for polygon in polygons
       polygon.toSvg perspective
       svg_elt.appendChild polygon.path_elt
+    console.log("draw " + (+ new Date() - t))

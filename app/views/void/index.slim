@@ -19,9 +19,13 @@ javascript:
       var perspective = -128
       
       var rotatePolyhedron = function(){
-        console.log(phi)
-      
-        polyhedron.rotate(q, phi).toSvg(svg_elt, new Quaternion(0, 0, 0, perspective))
+        t = + new Date()
+        polyhedron = polyhedron.rotate(q, phi)
+        console.log("rotate " + (+ new Date() - t))
+        t = + new Date()
+        polyhedron.toSvg(svg_elt, new Quaternion(0, 0, 0, perspective))
+        console.log("tosvg " + (+ new Date() - t) + " (16)")
+        console.log("--")
       }
 
       var drag = function(e){
@@ -33,8 +37,6 @@ javascript:
           q = new Quaternion(0, move_y, move_x, 0)
           phi = -dist*TAU/720
           
-          console.log("x:"+move_x+" y:"+move_y)
-          console.log("dist:"+dist)
           requestAnimationFrame(rotatePolyhedron)
           
           x = e.screenX
@@ -45,7 +47,6 @@ javascript:
       }
 
       var startDrag = function(e){
-        console.log("start")
         x = e.screenX
         y = e.screenY
         document.onmousemove = drag
@@ -53,7 +54,6 @@ javascript:
       }
       
       var releaseDrag = function(e){
-        console.log("stop")
         document.onmousemove = null
         document.onmouseup = null
       }
@@ -82,7 +82,7 @@ javascript:
 / - planet = Planet.from_polyhedron(Polyhedron.isocahedron.divide(:trifoce).unify!)
 - planet = Planet.from_polyhedron(Polyhedron.noisy_isocahedron)
 - ([planet] + Planet.all.reverse).each do |planet|   
-  - polyhedron = planet.to_polyhedron.scale!(18)
+  - polyhedron = planet.to_polyhedron.scale!(15)
   h4 complexity (p/f): #{ polyhedron.points.size }/#{ polyhedron.faces.size } #{ polyhedron.points.size / polyhedron.faces.size.to_f }
   svg id='demo-#{ planet.id }' class='demo' viewBox='-20 -20 40 40'
   javascript:
