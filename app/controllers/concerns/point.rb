@@ -1,8 +1,25 @@
-class ComplexEngine::Point
+class Point
   attr_accessor :q
+
+  def self.from_dump dump
+    new *dump.split(':').map(&:to_f)
+  end
 
   def initialize *coords
     self.q = Quaternion 0, *coords
+  end
+
+  def dump
+    [x, y, z].join(":")
+  end
+
+  def eql? other
+    q == other.q
+  end
+  alias :== :eql?
+
+  def hash
+    [x, y, z].hash
   end
 
   def x
@@ -25,19 +42,12 @@ class ComplexEngine::Point
     self.q = h * (q + origin.conjugate) * h.inverse + origin
   end
 
-  def rotate_alt! rotation_matrix, origin
-    translate! origin.conjugate
-
-    result_matrix = rotation_matrix * Matrix[[x], [y], [z]]
-    x = result_matrix.element(0, 0)
-    y = result_matrix.element(1, 0)
-    z = result_matrix.element(2, 0)
-
-    self.q = Quaternion.new(0, x, y, z) + origin
-  end
-
   def scale! length, origin
     self.q = (origin.conjugate + q) * length + origin
+  end
+
+  def unify! origin
+    self.q = (origin.conjugate + q).unify + origin
   end
 
   def q= other
@@ -52,5 +62,13 @@ class ComplexEngine::Point
     ny = y + ((y - q.imag[1]) * t)
 
     self.class.new nx, ny, 0
+  end
+
+  def midpoint *other
+    Point.new(
+      (x + other.map(&:x).reduce(&:+)) / (other.size + 1.0),
+      (y + other.map(&:y).reduce(&:+)) / (other.size + 1.0),
+      (z + other.map(&:z).reduce(&:+)) / (other.size + 1.0),
+    )
   end
 end

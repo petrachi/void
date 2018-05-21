@@ -10,10 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180520233537) do
+ActiveRecord::Schema.define(version: 20180521012646) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "planets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "points", force: :cascade do |t|
     t.float "x"
@@ -38,6 +43,14 @@ ActiveRecord::Schema.define(version: 20180520233537) do
   create_table "polyhedrons", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "provinces", force: :cascade do |t|
+    t.bigint "planet_id"
+    t.string "dump"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["planet_id"], name: "index_provinces_on_planet_id"
   end
 
 end

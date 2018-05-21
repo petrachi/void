@@ -2,16 +2,16 @@ module Hex
   DIVIDE = 2
 
   def vector r: 1
-    ComplexEngine::Polyhedron.new(points: [
-        ComplexEngine::Point.new(0, r, 0),
+    Polyhedron.new(points: [
+        Point.new(0, r, 0),
       ],
       faces: []
     )
   end
 
   def unify polyhedron
-    ComplexEngine::Polyhedron.new points: polyhedron.points.map{ |point|
-      ComplexEngine::Point.new(point.q.unify.imag)
+    Polyhedron.new points: polyhedron.points.map{ |point|
+      Point.new(point.q.unify.imag)
     },
     faces: polyhedron.faces
   end
@@ -20,13 +20,13 @@ module Hex
     dist = Math::sin(Math::PI/3)*r/2.0
 
     points = []
-    v = ->{ComplexEngine::Polyhedron.new(points: [ComplexEngine::Point.new(r, -dist, 0)], faces: [])}
+    v = ->{Polyhedron.new(points: [Point.new(r, -dist, 0)], faces: [])}
     points << v.call.points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), TAU/3).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 2*TAU/3).points[0]
-    points << ComplexEngine::Point.new(0, dist*2.0, 0)
+    points << Point.new(0, dist*2.0, 0)
 
-    polyhedron = ComplexEngine::Polyhedron.new points: points,
+    polyhedron = Polyhedron.new points: points,
     faces: [
       [0, 1, 3],
       [1, 2, 3],
@@ -38,13 +38,13 @@ module Hex
   end
 
   def octahedron r: 1
-    polyhedron = ComplexEngine::Polyhedron.new points: [
-      ComplexEngine::Point.new(r,0,0),
-      ComplexEngine::Point.new(0,0,r),
-      ComplexEngine::Point.new(-r,0,0),
-      ComplexEngine::Point.new(0,0,-r),
-      ComplexEngine::Point.new(0,r,0),
-      ComplexEngine::Point.new(0,-r,0)
+    polyhedron = Polyhedron.new points: [
+      Point.new(r,0,0),
+      Point.new(0,0,r),
+      Point.new(-r,0,0),
+      Point.new(0,0,-r),
+      Point.new(0,r,0),
+      Point.new(0,-r,0)
     ],
     faces: [
       [0, 1, 4],
@@ -63,23 +63,23 @@ module Hex
   def isocahedron r: 1
     points = []
     dist = Math::sin(Math::PI/3)*r/2.0
-    v = ->{ComplexEngine::Polyhedron.new(points: [ComplexEngine::Point.new(r, dist, 0)], faces: [])}
+    v = ->{Polyhedron.new(points: [Point.new(r, dist, 0)], faces: [])}
     points << v.call.points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 2*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 3*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 4*TAU/5).points[0]
-    v = ->{ComplexEngine::Polyhedron.new(points: [ComplexEngine::Point.new(-r, -dist, 0)], faces: [])}
+    v = ->{Polyhedron.new(points: [Point.new(-r, -dist, 0)], faces: [])}
     points << v.call.points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 2*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 3*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 4*TAU/5).points[0]
 
-    points << ComplexEngine::Point.new(0, r, 0)
-    points << ComplexEngine::Point.new(0, -r, 0)
+    points << Point.new(0, r, 0)
+    points << Point.new(0, -r, 0)
 
-    polyhedron = ComplexEngine::Polyhedron.new(
+    polyhedron = Polyhedron.new(
       points: points,
       faces: [
         [0, 8, 1],
@@ -125,7 +125,7 @@ module Hex
 
     points, faces = rationalize points, faces
 
-    ComplexEngine::Polyhedron.new points: points, faces: faces
+    Polyhedron.new points: points, faces: faces
   end
   alias :divide_cube_triangle :divide_isocahedron
   alias :divide_octahedron :divide_isocahedron
@@ -154,15 +154,15 @@ module Hex
   end
 
   def cube r: 1
-    polyhedron = ComplexEngine::Polyhedron.new points: [
-      ComplexEngine::Point.new(r,r,r),
-      ComplexEngine::Point.new(-r,r,r),
-      ComplexEngine::Point.new(r,-r,r),
-      ComplexEngine::Point.new(-r,-r,r),
-      ComplexEngine::Point.new(r,r,-r),
-      ComplexEngine::Point.new(-r,r,-r),
-      ComplexEngine::Point.new(r,-r,-r),
-      ComplexEngine::Point.new(-r,-r,-r),
+    polyhedron = Polyhedron.new points: [
+      Point.new(r,r,r),
+      Point.new(-r,r,r),
+      Point.new(r,-r,r),
+      Point.new(-r,-r,r),
+      Point.new(r,r,-r),
+      Point.new(-r,r,-r),
+      Point.new(r,-r,-r),
+      Point.new(-r,-r,-r),
     ],
     faces: [
       [0, 1, 3, 2],
@@ -196,11 +196,11 @@ module Hex
 
     points, faces = rationalize points, faces
 
-    ComplexEngine::Polyhedron.new points: points, faces: faces
+    Polyhedron.new points: points, faces: faces
   end
 
   def midpoint p1, p2
-    ComplexEngine::Point.new(
+    Point.new(
       (p1.x + p2.x) / 2.0,
       (p1.y + p2.y) / 2.0,
       (p1.z + p2.z) / 2.0,
@@ -266,7 +266,7 @@ module Hex
 
     points, faces = rationalize points, faces
 
-    ComplexEngine::Polyhedron.new points: points, faces: faces
+    Polyhedron.new points: points, faces: faces
   end
 
   def cube_divide_x_time r: 1, times: DIVIDE

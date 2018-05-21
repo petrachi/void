@@ -1,11 +1,21 @@
-class ComplexEngine::Polyhedron
+class Polyhedron
+  extend Polyhedron::BasicShape
+
   attr_accessor :points, :faces, :polygons
+
+  def self.from_polygons polygons
+    points = polygons.map(&:points).flatten.uniq
+    faces = polygons.map do |polygon|
+      polygon.points.map { |point| points.index point }
+    end
+    new points: points, faces: faces
+  end
 
   def initialize points:, faces:
     @points = points
     @faces = faces
     @polygons = faces.map do |face|
-      ComplexEngine::Polygon.new *face.map{ |index| points[index] }
+      Polygon.new *face.map{ |index| points[index] }
     end
   end
 
@@ -37,27 +47,17 @@ class ComplexEngine::Polyhedron
     self
   end
 
-  def rotate_alt! q, phi
-    sin = Math.sin phi / 2
-    cos = Math.cos phi / 2
-
-    q0 = cos
-    q1 = q.unify.imag[0] * sin
-    q2 = q.unify.imag[1] * sin
-    q3 = q.unify.imag[2] * sin
-
-    rotation_matrix = Matrix[
-      [q0**2 + q1**2 - q2**2 - q3**2, 2*(q1*q2 - q0*q3), 2*(q1*q3 + q0*q2)],
-      [2*(q2*q1 + q0*q3), q0**2 - q1**2 + q2**2 - q3**2, 2*(q2*q3 - q0*q1)],
-      [2*(q3*q1 - q0*q2), 2*(q3*q2 + q0*q1), q0**2 - q1**2 - q2**2 + q3**2],
-    ]
-
-    points.each{ |pt| pt.rotate_alt! rotation_matrix }
-    self
-  end
-
   def scale! length, origin: Quaternion(0, 0, 0, 0)
     points.each{ |pt| pt.scale! length, origin }
     self
+  end
+
+  def unify! origin: Quaternion(0, 0, 0, 0)
+    points.each{ |pt| pt.unify! origin }
+    self
+  end
+
+  def divide
+    self.class.from_polygons polygons.map(&:divide).flatten
   end
 end
