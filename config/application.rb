@@ -14,5 +14,10 @@ module Myapp
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
+
+    if Rails.env.development?
+      ::DOCKER_IP = `/sbin/ip route|awk '/default/ { print $3 }'`.strip
+      config.web_console.whitelisted_ips = DOCKER_IP
+    end
   end
 end

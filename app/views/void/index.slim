@@ -1,0 +1,117 @@
+- q = Quaternion(0, -1, 0, -1)
+- phi = TAU/24
+- vp = Hex.vector(r:30).rotate!(q, phi)
+- v = vp.points[0].proj(Quaternion(0, 0, 0, -Float::INFINITY))
+
+javascript:
+  (function() {    
+    window.dragPolyhedron = function(svg_elt, polyhedron){
+      var x = 0
+      var y = 0
+      
+      var q = new Quaternion(0, 1, 0, 0)
+      var phi = 0
+      
+      var perspective = -128
+      
+      var rotatePolyhedron = function(){
+        console.log(phi)
+      
+        polyhedron.rotate(q, phi).toSvg(svg_elt, new Quaternion(0, 0, 0, perspective))
+      }
+
+      var drag = function(e){
+        move_x = e.screenX - x
+        move_y = e.screenY - y
+        
+        dist = Math.sqrt((move_x * move_x) + (move_y * move_y))
+        if(dist > 0){
+          q = new Quaternion(0, move_y, move_x, 0)
+          phi = -dist*TAU/720
+          
+          console.log("x:"+move_x+" y:"+move_y)
+          console.log("dist:"+dist)
+          requestAnimationFrame(rotatePolyhedron)
+          
+          x = e.screenX
+          y = e.screenY
+        }
+        
+        return false
+      }
+
+      var startDrag = function(e){
+        console.log("start")
+        x = e.screenX
+        y = e.screenY
+        document.onmousemove = drag
+        document.onmouseup = releaseDrag
+      }
+      
+      var releaseDrag = function(e){
+        console.log("stop")
+        document.onmousemove = null
+        document.onmouseup = null
+      }
+      
+      svg_elt.addEventListener('mousedown', function(e){
+        startDrag(e)
+      })
+      
+      svg_elt.addEventListener('mousewheel', function(e){
+        e.preventDefault()
+        
+        // bad scroll event, changing the perspective is weird
+        perspective = perspective - e.deltaY
+        polyhedron.toSvg(svg_elt, new Quaternion(0, 0, 0, perspective))
+        
+        // better scroll event, by translating, it's like we move the camera into the scene
+        // but by doing this, we lose the origin rotation point for the mousemove event
+        // polyhedron.translate(new Quaternion(0, e.deltaX, 0, e.deltaY))
+        // polyhedron.toSvg(svg_elt, new Quaternion(0, 0, 0, perspective))
+      })
+    }
+  }).call(this)
+
+- %w[isocahedron cube octahedron tetrahedron cube_triangle].each do |polyhedron_name|
+  h2 = polyhedron_name.pluralize.titleize
+
+  - polyhedron = Hex.send polyhedron_name, r: 18
+  h4 complexity (p/f): #{ polyhedron.points.size }/#{ polyhedron.faces.size } #{ polyhedron.points.size / polyhedron.faces.size.to_f }
+  
+  svg id='demo-#{ polyhedron_name }--' class='demo' viewBox='-20 -20 40 40'
+  javascript:
+    (function() {    
+      var polyhedron = #{ polyhedron.rotate!(q, phi).to_js }
+      var svg_elt = document.querySelector('svg#demo-#{ polyhedron_name }--')
+      
+      polyhedron.toSvg(svg_elt, new Quaternion(0, 0, 0, -128))
+      dragPolyhedron(svg_elt, polyhedron)
+    }).call(this)
+  
+  - 3.times do |i|  
+    - %W[divide_#{ polyhedron_name } unify ].each do |transformation|
+      - polyhedron = Hex.send(transformation, polyhedron)
+      - polyhedron.scale!(18) if transformation == 'unify'
+      h4 #{ transformation } - complexity (p/f): #{ polyhedron.points.size }/#{ polyhedron.faces.size } #{ polyhedron.points.size / polyhedron.faces.size.to_f }
+      svg id='demo-#{ polyhedron_name }-#{ transformation }-#{ i }' class='demo' viewBox='-20 -20 40 40'
+      javascript:
+        (function() {    
+          var polyhedron = #{ polyhedron.to_js }
+          var svg_elt = document.querySelector('svg#demo-#{ polyhedron_name }-#{ transformation }-#{ i }')
+          
+          polyhedron.toSvg(svg_elt, new Quaternion(0, 0, 0, -128))
+          dragPolyhedron(svg_elt, polyhedron)
+        }).call(this)
+
+javascript:
+  (function() {    
+    Array.prototype.forEach.call(document.querySelectorAll('svg.demo path:nth-child(15n)'), function(path){
+      path.style['fill'] = 'firebrick'
+    })
+    Array.prototype.forEach.call(document.querySelectorAll('svg.demo path:nth-child(20n)'), function(path){
+      path.style['fill'] = 'dodgerblue'
+    })
+  }).call(this)
+  
+  
