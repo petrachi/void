@@ -1,15 +1,16 @@
 class Point
-  attr_accessor :q
+  attr_accessor :q, :options
 
   def self.from_attributes attributes
     attributes.symbolize_keys!
-    point = new x: 0, y: 0, z: 0
+    point = new x: 0, y: 0, z: 0, **attributes.except(:q)
     point.q = Quaternion(attributes[:q])
     point
   end
 
-  def initialize x:, y:, z:
+  def initialize x:, y:, z:, options: {}
     self.q = Quaternion 0, x, y, z
+    @options = options
   end
 
   def eql? other
@@ -54,10 +55,14 @@ class Point
   end
 
   def midpoint *other
-    Point.new(
-      (x + other.map(&:x).reduce(&:+)) / (other.size + 1.0),
-      (y + other.map(&:y).reduce(&:+)) / (other.size + 1.0),
-      (z + other.map(&:z).reduce(&:+)) / (other.size + 1.0),
+    self.class.new(
+      x: (x + other.map(&:x).reduce(&:+)) / (other.size + 1.0),
+      y: (y + other.map(&:y).reduce(&:+)) / (other.size + 1.0),
+      z: (z + other.map(&:z).reduce(&:+)) / (other.size + 1.0),
     )
+  end
+
+  def dist other
+    (q + other.q.conjugate).length
   end
 end

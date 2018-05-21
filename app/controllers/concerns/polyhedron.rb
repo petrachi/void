@@ -12,11 +12,11 @@ class Polyhedron
     new points: points, faces: faces, polygons: polygons
   end
 
-  def initialize points:, faces:, polygons: nil
+  def initialize points:, faces:, polygons: []
     @points = points
     @faces = faces
-    @polygons = polygons || faces.map do |face|
-      Polygon.new points: face.map{ |index| points[index] }
+    @polygons = faces.each_with_index.map do |face, i|
+      Polygon.new points: face.map{ |index| points[index] }, options: polygons[i]&.options || {}
     end
   end
 
@@ -28,7 +28,8 @@ class Polyhedron
     params = {
       points: points.map(&:q).map(&:imag),
       faces: faces,
-      polygons: polygons.map(&:options),
+      polygons_options: polygons.map(&:options),
+      points_options: points.map(&:options),
     }.to_json
     "Polyhedron.initialize(#{params})".html_safe
   end

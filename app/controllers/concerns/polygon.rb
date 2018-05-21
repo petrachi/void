@@ -16,6 +16,14 @@ class Polygon
     points.map(&:z).reduce(&:+)
   end
 
+  def center
+    points.first.midpoint(*points[1..-1])
+  end
+
+  def dist other
+    center.dist other.center
+  end
+
   def divide method
     case method
     when :triforce
@@ -26,13 +34,13 @@ class Polygon
       ]
 
       [
-        self.class.new(points: [points[0], midpoints[0], midpoints[2]]),
-        self.class.new(points: [points[1], midpoints[0], midpoints[1]]),
-        self.class.new(points: [points[2], midpoints[1], midpoints[2]]),
-        self.class.new(points: [midpoints[0], midpoints[1], midpoints[2]]),
+        self.class.new(points: [points[0], midpoints[0], midpoints[2]], options: options.dup),
+        self.class.new(points: [points[1], midpoints[0], midpoints[1]], options: options.dup),
+        self.class.new(points: [points[2], midpoints[1], midpoints[2]], options: options.dup),
+        self.class.new(points: [midpoints[0], midpoints[1], midpoints[2]], options: options.dup),
       ]
     else
-      [self.class.new(points: points)]
+      [self.class.new(points: points, options: options.dup)]
     end
   end
 end

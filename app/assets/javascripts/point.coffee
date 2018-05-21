@@ -1,5 +1,6 @@
 class window.Point
-  constructor: (x, y, z) ->
+  constructor: (x, y, z, @options) ->
+    console.log(@options)
     @q = new Quaternion(0, x, y, z)
 
   eql: (other) ->

@@ -41,8 +41,6 @@ class VoidController < ApplicationController
         value / total_amplitude
       end
     end
-
-
   end
 
   def smooth_noise base_noise, octave
