@@ -5,6 +5,9 @@ def Quaternion *args
     args[0]
   elsif args[0].is_a? Numeric and args[1].is_a? Vector
     Quaternion.new args[0], *args[1]
+  elsif args[0].is_a? Hash
+    args[0].symbolize_keys!
+    Quaternion.new args[0][:a], args[0][:b], args[0][:c], args[0][:d]
   else
     Quaternion.new *args
   end

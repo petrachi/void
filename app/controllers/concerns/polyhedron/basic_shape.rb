@@ -2,21 +2,21 @@ module Polyhedron::BasicShape
   def isocahedron r: 1
     points = []
     dist = Math::sin(Math::PI/3)*r/2.0
-    v = ->{Polyhedron.new(points: [Point.new(r, dist, 0)], faces: [])}
+    v = ->{Polyhedron.new(points: [Point.new(x: r, y: dist, z: 0)], faces: [])}
     points << v.call.points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 2*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 3*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 4*TAU/5).points[0]
-    v = ->{Polyhedron.new(points: [Point.new(-r, -dist, 0)], faces: [])}
+    v = ->{Polyhedron.new(points: [Point.new(x: -r, y: -dist, z: 0)], faces: [])}
     points << v.call.points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 2*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 3*TAU/5).points[0]
     points << v.call.rotate!(Quaternion(0,0,1,0), 4*TAU/5).points[0]
 
-    points << Point.new(0, r, 0)
-    points << Point.new(0, -r, 0)
+    points << Point.new(x: 0, y: r, z: 0)
+    points << Point.new(x: 0, y: -r, z: 0)
 
     polyhedron = Polyhedron.new(
       points: points,

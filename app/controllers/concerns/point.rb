@@ -1,16 +1,15 @@
 class Point
   attr_accessor :q
 
-  def self.from_dump dump
-    new *dump.split(':').map(&:to_f)
+  def self.from_attributes attributes
+    attributes.symbolize_keys!
+    point = new x: 0, y: 0, z: 0
+    point.q = Quaternion(attributes[:q])
+    point
   end
 
-  def initialize *coords
-    self.q = Quaternion 0, *coords
-  end
-
-  def dump
-    [x, y, z].join(":")
+  def initialize x:, y:, z:
+    self.q = Quaternion 0, x, y, z
   end
 
   def eql? other
@@ -52,16 +51,6 @@ class Point
 
   def q= other
     @q = other.round(4)
-  end
-
-  def proj q
-    z >= q.imag[2] or raise RangeError, 'the "z" coordinates of self must be >= to the "z" coordinate of the perspective point'
-
-    t = -z / (z - q.imag[2])
-    nx = x + ((x - q.imag[0]) * t)
-    ny = y + ((y - q.imag[1]) * t)
-
-    self.class.new nx, ny, 0
   end
 
   def midpoint *other

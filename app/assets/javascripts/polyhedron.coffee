@@ -1,10 +1,17 @@
 class window.Polyhedron
-  this.initialize = (params) ->
-    new Polyhedron(new Point(pt[0], pt[1], pt[2]) for pt in params['points'], params['faces'])
+    #.uniq
+    # faces = polygons.map do |polygon|
+    #   polygon.points.map { |point| points.index point }
+    # end
 
-  constructor: (@points, @faces) ->
-    @polygons = for face in @faces
-      new Polygon(@points[index] for index in face)
+
+  this.initialize = (params) ->
+    new Polyhedron(new Point(pt[0], pt[1], pt[2]) for pt in params['points'], params['faces'], params['polygons'])
+
+  constructor: (@points, @faces, polygons) ->
+    console.log(polygons)
+    @polygons = for face, i in @faces
+      new Polygon(@points[index] for index in face, polygons[i])
 
   translate: (q) ->
     point.translate(q) for point in @points

@@ -20,34 +20,9 @@ ActiveRecord::Schema.define(version: 20180521012646) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "points", force: :cascade do |t|
-    t.float "x"
-    t.float "y"
-    t.float "z"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "points_polygons", id: false, force: :cascade do |t|
-    t.bigint "point_id", null: false
-    t.bigint "polygon_id", null: false
-  end
-
-  create_table "polygons", force: :cascade do |t|
-    t.bigint "polyhedron_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["polyhedron_id"], name: "index_polygons_on_polyhedron_id"
-  end
-
-  create_table "polyhedrons", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "provinces", force: :cascade do |t|
     t.bigint "planet_id"
-    t.string "dump"
+    t.string "blob"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["planet_id"], name: "index_provinces_on_planet_id"

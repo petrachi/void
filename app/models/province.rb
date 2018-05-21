@@ -2,10 +2,10 @@ class Province < ApplicationRecord
   belongs_to :planet
 
   def self.from_polygon polygon
-    new dump: polygon.dump
+    new blob: polygon.to_json
   end
 
   def to_polygon
-    Polygon.from_dump dump
+    Polygon.from_json blob
   end
 end

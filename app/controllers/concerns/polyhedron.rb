@@ -1,5 +1,6 @@
 class Polyhedron
   extend Polyhedron::BasicShape
+  extend Polyhedron::NoisyShape
 
   attr_accessor :points, :faces, :polygons
 
@@ -8,25 +9,26 @@ class Polyhedron
     faces = polygons.map do |polygon|
       polygon.points.map { |point| points.index point }
     end
-    new points: points, faces: faces
+    new points: points, faces: faces, polygons: polygons
   end
 
-  def initialize points:, faces:
+  def initialize points:, faces:, polygons: nil
     @points = points
     @faces = faces
-    @polygons = faces.map do |face|
-      Polygon.new *face.map{ |index| points[index] }
+    @polygons = polygons || faces.map do |face|
+      Polygon.new points: face.map{ |index| points[index] }
     end
   end
 
-  def to_svg view, perspective: Quaternion(0, 0, 0, -Float::INFINITY)
-    polygons.sort_by(&:sum_z).map{ |polygon| polygon.to_svg(view, perspective) }.reduce(&:concat)
+  def to_polyhedron
+    self
   end
 
   def to_js
     params = {
       points: points.map(&:q).map(&:imag),
-      faces: faces
+      faces: faces,
+      polygons: polygons.map(&:options),
     }.to_json
     "Polyhedron.initialize(#{params})".html_safe
   end
@@ -57,7 +59,7 @@ class Polyhedron
     self
   end
 
-  def divide
-    self.class.from_polygons polygons.map(&:divide).flatten
+  def divide method
+    self.class.from_polygons polygons.map { |polygon| polygon.divide method }.flatten
   end
 end

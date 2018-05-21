@@ -4,13 +4,8 @@ table[style='border-collapse: collapse']
       - row.each do |value|
         td[style="height: 1px; width: 1px; background-color: rgba(#{ (value * 255).to_i },#{ (value * 127).to_i },#{ 255 - (value * 255).to_i },1); padding: 0"]
 
-
-
-
 - q = Quaternion(0, -1, 0, -1)
 - phi = TAU/24
-- vp = Hex.vector(r:30).rotate!(q, phi)
-- v = vp.points[0].proj(Quaternion(0, 0, 0, -Float::INFINITY))
 
 javascript:
   (function() {    
@@ -84,12 +79,14 @@ javascript:
     }
   }).call(this)
 
-- Planet.all.reverse.each do |planet|   
+/ - planet = Planet.from_polyhedron(Polyhedron.isocahedron.divide(:trifoce).unify!)
+- planet = Planet.from_polyhedron(Polyhedron.noisy_isocahedron)
+- ([planet] + Planet.all.reverse).each do |planet|   
   - polyhedron = planet.to_polyhedron.scale!(18)
   h4 complexity (p/f): #{ polyhedron.points.size }/#{ polyhedron.faces.size } #{ polyhedron.points.size / polyhedron.faces.size.to_f }
   svg id='demo-#{ planet.id }' class='demo' viewBox='-20 -20 40 40'
   javascript:
-    (function() {    
+    (function() {
       var polyhedron = #{ polyhedron.to_js }
       var svg_elt = document.querySelector('svg#demo-#{ planet.id }')
       
@@ -97,14 +94,14 @@ javascript:
       dragPolyhedron(svg_elt, polyhedron)
     }).call(this)
 
-javascript:
-  (function() {    
-    Array.prototype.forEach.call(document.querySelectorAll('svg.demo path:nth-child(15n)'), function(path){
-      path.style['fill'] = 'firebrick'
-    })
-    Array.prototype.forEach.call(document.querySelectorAll('svg.demo path:nth-child(20n)'), function(path){
-      path.style['fill'] = 'dodgerblue'
-    })
-  }).call(this)
+/ javascript:
+/   (function() {    
+/     Array.prototype.forEach.call(document.querySelectorAll('svg.demo path:nth-child(15n)'), function(path){
+/       path.style['fill'] = 'firebrick'
+/     })
+/     Array.prototype.forEach.call(document.querySelectorAll('svg.demo path:nth-child(20n)'), function(path){
+/       path.style['fill'] = 'dodgerblue'
+/     })
+/   }).call(this)
   
   

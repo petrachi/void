@@ -2,6 +2,9 @@ class window.Point
   constructor: (x, y, z) ->
     @q = new Quaternion(0, x, y, z)
 
+  eql: (other) ->
+    @x == other.x && @y == other.y && @z == other.z
+
   x: ->
     @q.imag()[0]
 

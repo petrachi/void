@@ -1,14 +1,11 @@
 class VoidController < ApplicationController
   def index
-    width = 600
-    height = 300
+    width = 150
+    height = 75
 
     noise = Array.new(height, Array.new(width, nil))
     noise = noise.map{ |row| row.map{ rand }}
 
-
-    @grid = noise
-    @grid = smooth_noise(noise, 4)
     @grid = perlin_noise(noise, 8)
   end
 
