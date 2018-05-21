@@ -1,3 +1,12 @@
+table[style='border-collapse: collapse']
+  - @grid.each do |row|
+    tr
+      - row.each do |value|
+        td[style="height: 1px; width: 1px; background-color: rgba(#{ (value * 255).to_i },#{ (value * 127).to_i },#{ 255 - (value * 255).to_i },1); padding: 0"]
+
+
+
+
 - q = Quaternion(0, -1, 0, -1)
 - phi = TAU/24
 - vp = Hex.vector(r:30).rotate!(q, phi)
@@ -75,8 +84,7 @@ javascript:
     }
   }).call(this)
 
-/- Planet.all.reverse.each do |planet|   
-- [].each do |planet|   
+- Planet.all.reverse.each do |planet|   
   - polyhedron = planet.to_polyhedron.scale!(18)
   h4 complexity (p/f): #{ polyhedron.points.size }/#{ polyhedron.faces.size } #{ polyhedron.points.size / polyhedron.faces.size.to_f }
   svg id='demo-#{ planet.id }' class='demo' viewBox='-20 -20 40 40'
